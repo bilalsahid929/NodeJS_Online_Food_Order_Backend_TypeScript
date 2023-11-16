@@ -4,6 +4,7 @@ import {
   AddFood,
   GetFoods,
   GetVandorProfile,
+  UpdateVandorCoverImage,
   UpdateVandorProfile,
   UpdateVandorService,
   Vandorlogin,
@@ -29,7 +30,7 @@ router.use(Authenticate);
 
 router.get("/profile", GetVandorProfile);
 router.patch("/profile", UpdateVandorProfile);
-
+router.patch("/coverimage", images, UpdateVandorCoverImage);
 router.patch("/service", UpdateVandorService);
 
 router.post("/food", images, AddFood);

@@ -69,6 +69,31 @@ export const UpdateVandorProfile = async (
   }
   return res.json({ message: "Vandor information Not found" });
 };
+
+export const UpdateVandorCoverImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const user = req.user;
+
+  const vandor = await FindVandor(user?._id);
+
+  if (vandor !== null) {
+    const files = req.files as [Express.Multer.File];
+
+    const images = files?.map((file: Express.Multer.File) => file.filename);
+
+    vandor.coverImages.push(...images);
+
+    const result = await vandor.save();
+
+    return res.json(result);
+  }
+
+  return res.json({ message: "Something wend wrong with the cover image" });
+};
+
 export const UpdateVandorService = async (
   req: Request,
   res: Response,
