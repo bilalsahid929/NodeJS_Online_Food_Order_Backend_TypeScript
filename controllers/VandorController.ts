@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { EditVandorInputs, VendorLoginInputs } from "../dto";
+import { CreateFoodInputs, EditVandorInputs, VendorLoginInputs } from "../dto";
 import { FindVandor } from "./AdminController";
 import { GenerateSignature, ValidatePassword } from "../utility";
+import { Food } from "../models";
 
 export const Vandorlogin = async (
   req: Request,
@@ -95,6 +96,26 @@ export const AddFood = async (
 ) => {
   const user = req.user;
   if (user) {
+    const { name, description, category, foodType, readyTime, price } = <
+      CreateFoodInputs
+    >req.body;
+    const vandor = await FindVandor(user._id);
+    if (vandor !== null) {
+      const createdFood = await Food.create({
+        vandorId: vandor._id,
+        name: name,
+        description: description,
+        category: category,
+        foodType: foodType,
+        images: ["mock.jpg"],
+        readyTime: readyTime,
+        price: price,
+        rating: 0,
+      });
+      vandor.foods.push(createdFood);
+      const result = await vandor.save();
+      return res.json(result);
+    }
   }
   return res.json({ message: "Something wend wrong with the food" });
 };
@@ -106,6 +127,10 @@ export const GetFoods = async (
 ) => {
   const user = req.user;
   if (user) {
+    const foods = await Food.find({ vandorId: user._id });
+    if (foods !== null) {
+      return res.json(foods);
+    }
   }
   return res.json({ message: "Foods information Not found" });
 };
