@@ -99,21 +99,30 @@ export const AddFood = async (
     const { name, description, category, foodType, readyTime, price } = <
       CreateFoodInputs
     >req.body;
+
     const vandor = await FindVandor(user._id);
+
     if (vandor !== null) {
+      const files = req.files as [Express.Multer.File];
+
+      const images = files.map((file: Express.Multer.File) => file.filename);
+
       const createdFood = await Food.create({
         vandorId: vandor._id,
         name: name,
         description: description,
         category: category,
         foodType: foodType,
-        images: ["mock.jpg"],
+        images: images,
         readyTime: readyTime,
         price: price,
         rating: 0,
       });
+
       vandor.foods.push(createdFood);
+
       const result = await vandor.save();
+
       return res.json(result);
     }
   }
