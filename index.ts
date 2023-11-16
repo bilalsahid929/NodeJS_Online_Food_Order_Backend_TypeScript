@@ -1,22 +1,17 @@
 import express from "express";
-import bodyParser from "body-parser";
-import path from "path";
+import App from "./services/ExpressApp";
+import { connectDB } from "./services/Database";
 
-import { AdminRoute, VandorRoute } from "./routes";
-import { connectDB } from "./config";
+const StartServer = async () => {
+  const app = express();
 
-connectDB();
+  await connectDB();
 
-const app = express();
+  await App(app);
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use("/images", express.static(path.join(__dirname, "images")));
+  app.listen(8000, () => {
+    console.log("Listening to port 8000");
+  });
+};
 
-app.use("/admin", AdminRoute);
-app.use("/vandor", VandorRoute);
-
-app.listen(8000, () => {
-  console.clear();
-  console.log("App is listening to the port 8000");
-});
+StartServer();
