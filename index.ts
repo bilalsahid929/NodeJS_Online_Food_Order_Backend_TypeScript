@@ -1,8 +1,11 @@
 import express from "express";
 import App from "./services/ExpressApp";
 import { connectDB } from "./services/Database";
+import dotenv from "dotenv";
 
 const StartServer = async () => {
+  dotenv.config();
+
   const app = express();
 
   await connectDB();
