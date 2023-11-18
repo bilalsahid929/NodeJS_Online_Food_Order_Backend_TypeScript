@@ -3,6 +3,7 @@ import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
 
 import {
+  CartItem,
   CreateCustomerInputs,
   EditCustomerProfileInput,
   UserLoginInput,
@@ -15,7 +16,7 @@ import {
   ValidatePassword,
   onRequestOTP,
 } from "../utility";
-import { Customer } from "../models";
+import { Customer, Food, Order } from "../models";
 
 export const CustomerSignUp = async (
   req: Request,
@@ -60,6 +61,7 @@ export const CustomerSignUp = async (
     verified: false,
     lat: 0,
     lng: 0,
+    orders: [],
   });
   if (result) {
     // send the otp to customer
@@ -238,4 +240,82 @@ export const EditCustomerProfile = async (
     }
   }
   return res.status(400).json({ msg: "Error while Updating Profile" });
+};
+
+export const CreateOrder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // grab current login customer
+  const customer = req.user;
+  if (customer) {
+    // create an order ID
+    const orderId = `${Math.floor(Math.random() * 89999) * 1000}`;
+    const profile = await Customer.findById(customer._id);
+    // Grab order items from request  [{ id: XX, unit: XX }]
+    const cart = <[CartItem]>req.body;
+    let cartItems = Array();
+    let netAmount = 0.0;
+    // Calculate order amount
+    const foods = await Food.find()
+      .where("_id")
+      .in(cart.map((item) => item._id))
+      .exec();
+
+    foods.forEach((food) => {
+      cart.forEach(({ _id, unit }) => {
+        if (food._id == _id) {
+          netAmount += food.price * unit;
+          cartItems.push({ food, unit });
+        }
+      });
+    });
+
+    // Create Order with Item descriptions
+    if (cartItems) {
+      // create Order
+      const currentOrder = await Order.create({
+        orderID: orderId,
+        items: cartItems,
+        totalAmount: netAmount,
+        orderDate: new Date(),
+        paidThrough: "COD",
+        paymentResponse: "",
+        orderStatus: "Waiting",
+      });
+      if (currentOrder) {
+        // Finally update orders to user account
+        profile.orders.push(currentOrder);
+        await profile.save();
+        return res.status(200).json(currentOrder);
+      }
+    }
+  }
+  return res.status(400).json({ message: "Error with Create Order" });
+};
+export const GetOrders = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const customer = req.user;
+  if (customer) {
+    const profile = await Customer.findById(customer._id).populate("orders");
+    if (profile) {
+      return res.status(200).json(profile.orders);
+    }
+  }
+};
+
+export const GetOrderById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const orderId = req.params.id;
+  if (orderId) {
+    const order = await Order.findById(orderId).populate("items.food");
+    res.status(200).json(order);
+  }
 };
