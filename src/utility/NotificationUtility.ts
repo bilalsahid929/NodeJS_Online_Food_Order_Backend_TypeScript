@@ -21,7 +21,7 @@ export const onRequestOTP = async (otp?: number, toPhoneNumber?: string) => {
     const response = client.messages.create({
       body: `Your OTP is ${otp}`,
       from: twilioNumber,
-      to: "whatsapp:+923075969727",
+      to: toPhoneNumber || process.env.TWILIO_TO_PHONE, // replace it with actual number in productions
     });
 
     return response;
