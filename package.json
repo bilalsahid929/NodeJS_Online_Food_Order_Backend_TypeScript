@@ -4,20 +4,19 @@
   "description": "App to order food",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc -p .",
+    "postinstall": "npm run build"
+  },
+  "engines": {
+    "node": "20.7.0",
+    "npm": "10.1.0"
   },
   "author": "Bilal Shahid",
   "license": "ISC",
   "dependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/cors": "^2.8.16",
-    "@types/express": "^4.17.21",
-    "@types/jsonwebtoken": "^9.0.5",
-    "@types/mongoose": "^5.11.97",
-    "@types/multer": "^1.4.10",
     "bcrypt": "^5.1.1",
-    "body-parser": "^1.20.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "cors": "^2.8.5",
@@ -26,9 +25,17 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.1",
     "multer": "^1.4.5-lts.1",
+    "twilio": "^4.19.0"
+  },
+  "devDependencies": {
     "nodemon": "^3.0.1",
     "ts-node-dev": "^2.0.0",
-    "twilio": "^4.19.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.16",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/mongoose": "^5.11.97",
+    "@types/multer": "^1.4.10"
   }
 }

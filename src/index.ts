@@ -2,6 +2,7 @@ import express from "express";
 import App from "./services/ExpressApp";
 import { connectDB } from "./services/Database";
 import dotenv from "dotenv";
+import { PORT } from "./config";
 
 const StartServer = async () => {
   dotenv.config();
@@ -12,8 +13,8 @@ const StartServer = async () => {
 
   await App(app);
 
-  app.listen(8000, () => {
-    console.log("Listening to port 8000");
+  app.listen(PORT, () => {
+    console.log(`Listening to port ${PORT}`);
   });
 };
 
