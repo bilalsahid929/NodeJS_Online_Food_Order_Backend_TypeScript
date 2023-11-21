@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { FoodDoc, Vandor } from "../models";
+import { FoodDoc, Vendor } from "../models";
 
 export const GetFoodAvailability = async (
   req: Request,
@@ -8,7 +8,7 @@ export const GetFoodAvailability = async (
 ) => {
   const pincode = req.params.pincode;
 
-  const result = await Vandor.find({
+  const result = await Vendor.find({
     pincode: pincode,
     serviceAvailable: true,
   })
@@ -29,7 +29,7 @@ export const GetTopRestaurants = async (
 ) => {
   const pincode = req.params.pincode;
 
-  const result = await Vandor.find({
+  const result = await Vendor.find({
     pincode: pincode,
     serviceAvailable: true,
   })
@@ -49,15 +49,15 @@ export const GetFoodsIn30Min = async (
 ) => {
   const pincode = req.params.pincode;
 
-  const result = await Vandor.find({
+  const result = await Vendor.find({
     pincode: pincode,
     serviceAvailable: true,
   }).populate("foods");
 
   if (result.length > 0) {
     let foodResult: any = [];
-    result.forEach((vandor) => {
-      const foods = vandor.foods as [FoodDoc];
+    result.forEach((vendor) => {
+      const foods = vendor.foods as [FoodDoc];
       foodResult.push(...foods.filter((food) => food.readyTime <= 30));
     });
     return res.status(200).json(foodResult);
@@ -72,15 +72,15 @@ export const SearchFoods = async (
 ) => {
   const pincode = req.params.pincode;
 
-  const result = await Vandor.find({
+  const result = await Vendor.find({
     pincode: pincode,
     serviceAvailable: true,
   }).populate("foods");
 
   if (result.length > 0) {
     let foodResult: any = [];
-    result.forEach((vandor) => {
-      const foods = vandor.foods as [FoodDoc];
+    result.forEach((vendor) => {
+      const foods = vendor.foods as [FoodDoc];
       foodResult.push(...foods);
     });
     return res.status(200).json(foodResult);
@@ -95,7 +95,7 @@ export const RestaurantsById = async (
 ) => {
   const id = req.params.id;
 
-  const result = await Vandor.findById(id).populate("foods");
+  const result = await Vendor.findById(id).populate("foods");
 
   if (result) {
     return res.status(200).json(result);
